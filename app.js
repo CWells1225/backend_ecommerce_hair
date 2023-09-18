@@ -24,3 +24,4 @@ mongoConnect(process.env.MONGO_URI);
 app.get('/api/v1', (req, res) => {
     res.json({ msg:'hello world' })
 })
+
