@@ -1,8 +1,5 @@
 import express from 'express';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // db 
 import { mongoConnect } from './db/connections.js';
