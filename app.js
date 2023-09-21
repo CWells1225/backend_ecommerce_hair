@@ -7,7 +7,10 @@ dotenv.config();
 // db 
 import { mongoConnect } from './db/connections.js';
 
-const app = express();
+// routers
+import productRouter from './routes/product.js'; 
+
+const app = express()
 
 const PORT = process.env.PORT || 5001;
 
@@ -25,3 +28,4 @@ app.get('/api/v1', (req, res) => {
 	res.json({ msg:'hello world' });
 });
 
+app.use('/api/v1/products', productRouter);
