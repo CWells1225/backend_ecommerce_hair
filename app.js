@@ -7,21 +7,21 @@ dotenv.config();
 // db 
 import { mongoConnect } from './db/connections.js';
 
-const app = express()
+const app = express();
 
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`running on port ${PORT}`)); 
 
 if (process.env.NODE_ENV !== 'production'){
-    app.use(morgan('dev'))
-};
+	app.use(morgan('dev'));
+}
 
 app.use(express.json());
 
 mongoConnect(process.env.MONGO_URI);
 
 app.get('/api/v1', (req, res) => {
-    res.json({ msg:'hello world' })
-})
+	res.json({ msg:'hello world' });
+});
 
