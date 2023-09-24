@@ -26,3 +26,6 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use('/api/v1/products', productRouter);
+
+console.log(process.env.MONGO_URI);
+
