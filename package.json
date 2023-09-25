@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "eslint": "^8.50.0",
+    "eslint-plugin-jest": "^27.4.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1"
   },
@@ -18,7 +19,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-prod": "NODE_ENV=production node -r dotenv/config app.js dotenv_config_path=.env.production",
-    "start-dev": "NODE_ENV=development nodemon -r dotenv/config app.js dotenv_config_path=.env.development"
+    "start-dev": "NODE_ENV=development nodemon -r dotenv/config app.js dotenv_config_path=.env.development",
+    "lint-fix": "npx eslint . --fix"
   },
   "author": "",
   "license": "ISC",
