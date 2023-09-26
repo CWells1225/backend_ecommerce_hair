@@ -34,3 +34,29 @@ export const getProduct = async (req, res) => {
     }
     res.status(200).json(product)
 }
+
+export const updateProduct = async (req, res) => {
+    const { id } = req.params 
+
+    const product = await Product.findOneAndUpdate({ _id: id}, {
+        ...req.body
+    })
+
+    if (!product) {
+        return res.status(403).json({ error: 'Product does not exist.'})
+    }
+
+    res.status(200).json(product)
+} 
+
+export const deleteProduct = async ( req, res) => {
+    const { id } = req.params
+
+    const product = await Product.findOneAndDelete({ _id: id})
+
+    if(!product) {
+        return res.status(403).json({ error: 'Product does not exist.'})
+    }
+
+    res.status(200).json(product)
+}
