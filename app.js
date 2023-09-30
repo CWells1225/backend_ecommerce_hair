@@ -1,11 +1,11 @@
 import express from 'express';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // db 
 import { mongoConnect } from './db/connections.js';
+
+// routers
+import productRouter from './routes/product.js'; 
 
 const app = express();
 
@@ -22,6 +22,10 @@ app.use(express.json());
 mongoConnect(process.env.MONGO_URI);
 
 app.get('/api/v1', (req, res) => {
-	res.json({ msg:'hello world' });
+	res.json({ msg: 'hello world' });
 });
+
+app.use('/api/v1/products', productRouter);
+
+console.log(process.env.MONGO_URI);
 
