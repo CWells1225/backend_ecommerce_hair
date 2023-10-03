@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
     fName: {
@@ -14,7 +15,12 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String, 
         required: [true, 'Email is required.'],
-        unique: true
+        unique: true, 
+        validate: {
+            validator: validator.isEmail,
+            message: 'Please provide a valid email',
+            trim: true
+       }
     }, 
     password: {
         type: String, 
@@ -22,4 +28,4 @@ const userSchema = new mongoose.Schema({
     }
 }); 
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);
