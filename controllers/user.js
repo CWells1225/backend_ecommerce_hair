@@ -87,3 +87,53 @@ export const updateUser = async (req, res) => {
     });
 };
 
+export const getUser = async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                error: 'Provide user id'
+            });
+    }
+
+    const user = await User.findOne({ _id: id });
+
+    if (!user) {
+            return res.status(StatusCodes.MOT_FOUND).json({
+                error: 'No user found by that id'
+            });
+
+    }
+
+    return res.status(StatusCodes.OK).json({
+        message:'Successful',
+        data: { ... user._doc }, 
+    });
+};
+
+export const getUsers = async (req, res) => {
+    const users = await User.find({});
+
+    if (!users) {
+            res.status(StatusCodes.OK).json({ error: 'No users in the database'});
+    }
+
+    res.status(StatusCodes.OK).json({
+        message: 'Successful',
+        count: users.length,
+        data: { ...users},
+    });
+    
+};
+
+export const deleteUser = async (req, res) => {
+    const { id } = req.params; 
+
+    if (!id) {
+            return res.json({ error: 'Please provide user id'});
+    }
+
+    await User.findByIdAndDelete(id);
+
+    return res.status(StatusCodes.OK).json({ message: 'Deleted!'});
+};
