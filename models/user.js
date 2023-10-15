@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
     fName: {
@@ -25,7 +26,15 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String, 
         required: [true, 'Password is required.']
-    }
+    }, 
+    createdAt: {
+        type: Date, 
+        default: new Date(),
+    },
 }); 
+
+userSchema.pre('save', async function () {
+    this.password = await bcrypt.hash(this.password, 12);
+})
 
 export default mongoose.model('User', userSchema);
