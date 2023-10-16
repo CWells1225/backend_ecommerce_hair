@@ -1,13 +1,15 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-
+import dotenv from 'dotenv'; 
+import { StatusCodes } from 'http-status-codes';
 
 // db 
 import { mongoConnect } from './db/connections.js';
 
 // routers
 import productRouter from './routes/product.js'; 
+import userRouter from './routes/user.js'; 
 
 const app = express();
 
@@ -34,6 +36,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use('/api/v1/products', productRouter);
+app.use("/", userRouter);
 
 console.log(process.env.MONGO_URI);
 
