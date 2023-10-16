@@ -36,7 +36,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use('/api/v1/products', productRouter);
-app.use("/", userRouter);
+app.use("/api/v1/users", userRouter);
 
 console.log(process.env.MONGO_URI);
 
