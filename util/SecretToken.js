@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-module.exports.createSecretToken = (id) => {
-  return jwt.sign({ id }, process.env.TOKEN_KEY, {
-    expiresIn: 3 * 24 * 60 * 60,
-  });
+export const createSecretToken = id => {
+	return jwt.sign({ id }, process.env.TOKEN_KEY, {
+		expiresIn: 3 * 24 * 60 * 60,
+	});
 };

@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== 'production'){
 app.use(cors({
 	origin: ['http://localhost:5001'],
 	methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
-	credentials: true
+	credentials: true,
 }));
 
 app.use(express.json());
@@ -36,7 +36,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use('/api/v1/products', productRouter);
-app.use("/api/v1/users", userRouter);
+app.use('/api/v1/users', userRouter);
 
 console.log(process.env.MONGO_URI);
 
