@@ -1,5 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
+
 
 // db 
 import { mongoConnect } from './db/connections.js';
@@ -16,6 +18,12 @@ app.listen(PORT, () => console.log(`running on port ${PORT}`));
 if (process.env.NODE_ENV !== 'production'){
 	app.use(morgan('dev'));
 }
+
+app.use(cors({
+	origin: ['http://localhost:5001'],
+	methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
+	credentials: true
+}));
 
 app.use(express.json());
 

@@ -12,7 +12,7 @@ export const register = async (req, res) => {
 
     const { fName, lName, email, password } = req.body; 
 
-    const userAlreadyExists = await User.findOne({ email: req.body.email });
+    const userAlreadyExists = await User.findOne({ email });
 
     if (userAlreadyExists) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -55,15 +55,15 @@ export const login = async (req, res) => {
         return res.json({ error: 'Invalid Credentials'}); 
     }
 
-    const isPasswordCoreect = await user.comparePassword(password);
+    const isPasswordCorrect = await user.comparePassword(password);
 
-    if (!isPasswordCoreect) {
-        return res.json({ error: 'Invalid Credentials'});
+    if (!isPasswordCorrect) {
+        return res.json({error: 'Invalid Credentials'});
     }
 
     const token = user.createJWT(); 
 
-    user.password=undefined;
+    user.password = undefined;
 
     res.status(StatusCodes.OK).json({
         message: 'Login successfully',
