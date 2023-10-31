@@ -1,8 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import dotenv from 'dotenv'; 
-import { StatusCodes } from 'http-status-codes';
+import cookieParser from 'cookie-parser';
 
 // db 
 import { mongoConnect } from './db/connections.js';
@@ -26,6 +25,8 @@ app.use(cors({
 	methods: ['GET', 'POST', 'PATCH', 'DELETE'], 
 	credentials: true,
 }));
+
+app.use(cookieParser()); 
 
 app.use(express.json());
 

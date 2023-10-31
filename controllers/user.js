@@ -4,15 +4,15 @@ import { StatusCodes } from 'http-status-codes';
 
 export const signUp = async (req, res, next) => {
 	try {
-		const { fname, lname, email, password, createdAt } = req.body;
+		const { fName, lName, email, password, createdAt } = req.body;
 		const userAlreadyExists = await User.findOne({ email: req.body.email });
 
 		if (userAlreadyExists) {
 			return res.json({ message: 'User already exists.' });
 		}
 		const user = await User.create({
-			fname,
-			lname,
+			fName,
+			lName,
 			email,
 			password,
 			createdAt,
