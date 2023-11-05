@@ -1,139 +1,84 @@
-import User from '../models/user.js'; 
+import User from '../models/user.js';
+import { createSecretToken } from '../util/SecretToken.js';
+import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
+import dotenv from 'dotenv'; 
+import jwt from 'jsonwebtoken'; 
 
-export const register = async (req, res) => {
-    const schema = registerSchema(req.body)
+dotenv.config(); 
 
-    if (schema.error) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            error: schema.error.details[0].message,
-        });
-    }
+export const signUp = async (req, res, next) => {
+	try {
+		const { fName, lName, email, password, createdAt } = req.body;
+		const userAlreadyExists = await User.findOne({ email: req.body.email });
 
-    const { fName, lName, email, password } = req.body; 
+		if (userAlreadyExists) {
+			return res.json({ message: 'User already exists.' });
+		}
+		const user = await User.create({
+			fName,
+			lName,
+			email,
+			password,
+			createdAt,
+		});
 
-    const userAlreadyExists = await User.findOne({ email });
-
-    if (userAlreadyExists) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            error: '"Email" already in use', 
-            field: 'email',
-        });
-    }
-
-    const user = await User.create ({
-        fName, 
-        lName, 
-        email, 
-        password,
-    });
-
-    const token = user.createJWT(); 
-
-    return res.status(StatusCodes.CREATED).json({
-        message: 'User created successfully',
-        data: {
-                token,
-        },
-    });
+		const token = createSecretToken(user._id);
+		res.cookie('token', token, {
+			withCredentials: true,
+			httpOnly: false,
+		});
+		res
+			.status(StatusCodes.OK)
+			.json({ message: 'User signed in successfully.', success: true, user });
+		next();
+	} catch (error) {
+		console.error(error);
+	}
 };
 
-export const login = async (req, res) => {
-    const schema = loginSchema(req.body);
+export const login = async (req, res, next) => {
+	try {
+		const { email, password } = req.body;
 
-    if (schema.error) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            error: schema.error.details[0].message,
-        });
-    }
-
-    const { fName, lName, email, password } = req.body; 
-
-    const user = await User.findOne({ email }).select('+password');
-
-    if (!user) {
-        return res.json({ error: 'Invalid Credentials'}); 
-    }
-
-    const isPasswordCorrect = await user.comparePassword(password);
-
-    if (!isPasswordCorrect) {
-        return res.json({error: 'Invalid Credentials'});
-    }
-
-    const token = user.createJWT(); 
-
-    user.password = undefined;
-
-    res.status(StatusCodes.OK).json({
-        message: 'Login successfully',
-        token,
-    });
-
+		if (!email || !password){
+			return res.json({ message: 'All fields are required.' });
+		}
+		const user = await User.findOne({ email }); 
+		
+		if(!user){
+			return res.json({ message: 'Invalid login' });
+		}
+		const auth = await bcrypt.compare(password,user.password);
+		
+		if (!auth) {
+			return res.json({ message: 'Incorrect password or email.' });
+		}
+		const token = createSecretToken(user._id); 
+		res.cookie('token', token, {
+			withCredentials: true, 
+			httpOnly: false, 
+		}); 
+		res.status(StatusCodes.OK).json({ message: 'User logged in successfully.', success: true }); 
+		next();
+	} catch (error) {
+		console.error(error);
+	}
 }; 
 
-export const updateUser = async (req, res) => {
-    const { id } = req.params; 
+export const userVerification = async (req, res) => {
+	const token = req.cookies.token;
 
-    if (!id) {
-            return res.json({ error: 'Please provide user id'});
-    }
-
-    const user = await User.findByIdAndUpdate(id, req.body, { new: true });
-
-    return res.status(StatusCodes.OK).json({
-        message: 'Updated Successful',
-        data: {...user._doc},
-    });
-};
-
-export const getUser = async (req, res) => {
-    const { id } = req.params;
-
-    if (!id) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                error: 'Provide user id'
-            });
-    }
-
-    const user = await User.findOne({ _id: id });
-
-    if (!user) {
-            return res.status(StatusCodes.MOT_FOUND).json({
-                error: 'No user found by that id'
-            });
-
-    }
-
-    return res.status(StatusCodes.OK).json({
-        message:'Successful',
-        data: { ... user._doc }, 
-    });
-};
-
-export const getUsers = async (req, res) => {
-    const users = await User.find({});
-
-    if (!users) {
-            res.status(StatusCodes.OK).json({ error: 'No users in the database'});
-    }
-
-    res.status(StatusCodes.OK).json({
-        message: 'Successful',
-        count: users.length,
-        data: { ...users},
-    });
-    
-};
-
-export const deleteUser = async (req, res) => {
-    const { id } = req.params; 
-
-    if (!id) {
-            return res.json({ error: 'Please provide user id'});
-    }
-
-    await User.findByIdAndDelete(id);
-
-    return res.status(StatusCodes.OK).json({ message: 'Deleted!'});
+	if (!token) {
+		return res.json({ status: false }); 
+	}
+	jwt.verify(token, process.env.TOKEN_KEY, async (err, data) => {
+		if (err) {
+			return res.json({ status: false });
+		} else {
+			const user = await User.findById(data.id);
+			if (user) return res.json({ status: true, user: user.username });
+			else return res.json({ status: false });
+		}
+	});
 };
